@@ -11,4 +11,4 @@ app = Celery('zvook_test_task')
 
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
-app.autodiscover_tasks()
+app.autodiscover_tasks(['service'], force=True)
