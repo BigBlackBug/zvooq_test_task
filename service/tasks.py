@@ -15,15 +15,16 @@ logger = logging.getLogger(__name__)
 
 @shared_task
 def service_request_task(key):
-    logger.debug("Started task for key {}".format(key))
+    logger.info("Started task for key {}".format(key))
     redis_client = redis.Redis(connection_pool=pool)
-    response_data = requests.get(_SERVICE_URL.format(key)).json()
-    logger.debug(
-        "Got response from the remote server: '{}'".format(response_data))
     # TODO if request takes too long, retry
-    if 'hash' in response_data:
-        redis_client.set(key, response_data['hash'], ex=SECONDS_IN_DAY)
+    response = requests.get(_SERVICE_URL.format(key))
+    logger.info(
+        "Got response from the remote server: '{}'".format(response.content))
+    if response.content == 'error':
+        # TODO retry
+        logger.error("Remote server returned an error")
     else:
-        # TODO handle errors
-        pass
-    redis_client.srem("in_progress", key)
+        response_data = response.json()
+        redis_client.set(key, response_data['hash'], ex=SECONDS_IN_DAY)
+        redis_client.srem("in_progress", key)
