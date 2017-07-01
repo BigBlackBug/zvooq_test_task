@@ -9,6 +9,7 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.views import View
 
+from service.request_status import RequestStatus
 from service.tasks import service_request_task
 
 logger = logging.getLogger(__name__)
@@ -23,6 +24,7 @@ class MainView(View):
         key = request.GET.get("key")
         if key is None:
             return JsonResponse(status=400, data={
+                "status": RequestStatus.ERROR,
                 "error": "Key argument is missing"
             })
 
@@ -31,6 +33,7 @@ class MainView(View):
             key = key.encode('ascii')
         except UnicodeEncodeError:
             return JsonResponse(status=400, data={
+                "status": RequestStatus.ERROR,
                 "error": "Only ASCII keys are supported"
             })
 
@@ -43,6 +46,7 @@ class MainView(View):
         if value:
             logger.info("Key {} is in cache. Value: {}".format(key, value))
             return JsonResponse({
+                "status": RequestStatus.SUCCESS,
                 "hash": value
             })
         else:
@@ -54,9 +58,10 @@ class MainView(View):
                 redis_client.sadd(in_progress_set, key)
                 service_request_task.delay(key)
 
-                response_status = "started"
+                response_status = RequestStatus.ACCEPTED
             else:
-                response_status = "in progress"
+                response_status = RequestStatus.IN_PROGRESS
+
             return JsonResponse(status=202, data={
                 "status": response_status
             })

@@ -13,11 +13,11 @@
 
 ``GET /from_cache?key=whatever``
 
-``Returns 200 {"hash":""}`` если ответ есть в кеше
+``Returns 200 {"status":"success", "hash":""}`` если ответ есть в кеше
 
-``Returns 202 {"status":""}`` запрос принят или находится в обработке
+``Returns 202 {"status":""}`` запрос принят("accepted") или находится в обработке("in progress")
 
-``Returns 400 {"error":""}`` если параметр key отсутствует в запросе или ключ содержит non-ASCII символы
+``Returns 400 {"status":"error", "error":""}`` если параметр key отсутствует в запросе или ключ содержит non-ASCII символы
 
 
 Особенности
