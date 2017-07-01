@@ -21,9 +21,9 @@ logger = logging.getLogger(__name__)
 
 @shared_task(bind=True, default_retry_delay=3, max_retries=5)
 def service_request_task(self, key):
-    def handle_retry(task):
+    def handle_retry():
         try:
-            task.retry()
+            self.retry()
         except MaxRetriesExceededError:
             redis_client.srem(settings.REDIS_IN_PROGRESS_SET_NAME, key)
             logger.exception(e)
