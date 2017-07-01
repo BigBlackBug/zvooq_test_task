@@ -34,6 +34,7 @@ def service_request_task(self, key):
         response = requests.get(_SERVICE_URL.format(key),
                                 timeout=(connect_timeout, read_timeout))
     except RequestException as e:
+        logger.error("Request to the remote server timed out", e)
         handle_retry()
     else:
         logger.info(

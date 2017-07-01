@@ -5,7 +5,8 @@ import os
 from celery import Celery
 
 # set the default Django settings module for 'celery'
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'zvook_test_task.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE',
+                      'zvook_test_task.settings.local')
 
 app = Celery('zvook_test_task')
 
