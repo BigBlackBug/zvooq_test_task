@@ -37,12 +37,12 @@ class MainView(View):
                 "hash": value
             })
         else:
-            set_name = settings.REDIS_IN_PROGRESS_SET_NAME
+            in_progress_set = settings.REDIS_IN_PROGRESS_SET_NAME
             logger.info("Key {} not found in cache")
-            if not redis_client.sismember(set_name, key):
+            if not redis_client.sismember(in_progress_set, key):
                 logger.info("Task for key {} is not running. "
                             "Starting.".format(key))
-                redis_client.sadd(set_name, key)
+                redis_client.sadd(in_progress_set, key)
                 service_request_task.delay(key)
             # no content
             return HttpResponse(status=204)
