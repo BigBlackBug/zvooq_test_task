@@ -34,14 +34,14 @@ def service_request_task(self, key):
         response = requests.get(_SERVICE_URL.format(key),
                                 timeout=(connect_timeout, read_timeout))
     except RequestException as e:
-        handle_retry(self)
+        handle_retry()
     else:
         logger.info(
             "Got response from the remote server: '{}'".format(
                 response.content))
         if response.content == 'error':
             logger.error("Remote server returned an error")
-            handle_retry(self)
+            handle_retry()
         else:
             response_data = response.json()
             redis_client.set(key, response_data['hash'], ex=SECONDS_IN_DAY)
