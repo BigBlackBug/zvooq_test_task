@@ -20,7 +20,8 @@ class MainView(View):
                                 db=os.environ.get("REDIS_DB"))
 
     def get(self, request):
-        key = request.GET.get("key")
+        # TODO A workaround for non-ASCII symbols in the key
+        key = unicode(request.GET.get("key")).encode('ascii', 'ignore')
         if key is None:
             return JsonResponse(status=400, data={
                 "error": "Key argument is missing"
@@ -44,5 +45,5 @@ class MainView(View):
                             "Starting.".format(key))
                 redis_client.sadd(in_progress_set, key)
                 service_request_task.delay(key)
-            # no content
-            return HttpResponse(status=204)
+            # accepted
+            return HttpResponse(status=202)
