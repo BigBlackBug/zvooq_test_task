@@ -20,12 +20,20 @@ class MainView(View):
                                 db=os.environ.get("REDIS_DB"))
 
     def get(self, request):
-        # TODO A workaround for non-ASCII symbols in the key
-        key = unicode(request.GET.get("key")).encode('ascii', 'ignore')
+        key = request.GET.get("key")
         if key is None:
             return JsonResponse(status=400, data={
                 "error": "Key argument is missing"
             })
+
+        try:
+            # TODO A workaround for non-ASCII symbols in the key
+            key = key.encode('ascii')
+        except UnicodeEncodeError:
+            return JsonResponse(status=400, data={
+                "error": "Only ASCII keys are supported"
+            })
+
         logger.info("Got request for key {}".format(key))
 
         redis_client = redis.Redis(connection_pool=self.pool)
