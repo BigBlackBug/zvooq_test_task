@@ -21,6 +21,7 @@ services:
     build: ..
     entrypoint: ["/bin/bash", "start.sh"]
     environment:
+      - DJANGO_SETTINGS_MODULE=zvook_test_task.settings.production
       - CELERY_BROKER_URL=redis://redis:6379/0
       - REDIS_HOST=redis
       - REDIS_PORT=6379

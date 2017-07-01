@@ -24,9 +24,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '6o4ip1$j7c5it4#wk!s232ooz_tgna)7708g)&x$!azxtfbrpt'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'service.apps.ServiceConfig'
