@@ -52,6 +52,10 @@ USE_L10N = True
 
 USE_TZ = True
 
+LOG_DIR = '/var/log/zvook'
+if not os.path.exists(LOG_DIR):
+    os.makedirs(LOG_DIR)
+
 LOGGING = {
     'disable_existing_loggers': False,
     'version': 1,
@@ -70,13 +74,13 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'file.log'),
+            'filename': os.path.join(LOG_DIR, 'logs.log'),
             'formatter': 'default'
         },
     },
     'loggers': {
         'django': {
-            'handlers': ['console'],
+            'handlers': ['console', 'file'],
             'level': 'DEBUG',
             'propagate': True,
         }, 'celery': {
@@ -86,7 +90,7 @@ LOGGING = {
         },
     },
     'root': {
-        'handlers': ['console'],
+        'handlers': ['console', 'file'],
         'level': 'INFO',
     }
 }
