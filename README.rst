@@ -36,6 +36,7 @@
 Развёртывание
 -------------
 Для развёртывания потребуется установленный docker-ce и docker-compose версии 1.12 и выше
+Для Ubuntu можно использовать скрипт ``deployment/install-docker.sh``
 
 ``docker-compose up -d --build`` поднимает сервис на 8080 порту
 
