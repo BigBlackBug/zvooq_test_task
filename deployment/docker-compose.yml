@@ -1,0 +1,31 @@
+version: "2"
+services:
+  redis:
+    image: redis:2.8.19
+    hostname: redis
+
+  worker:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    command: celery -A zvook_test_task.celery:app worker --loglevel INFO
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+    links:
+      - redis
+
+  zvook_server:
+    build: ..
+    entrypoint: ["/bin/bash", "start.sh"]
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+    links:
+      - redis
+    ports:
+      - "8080:8000"

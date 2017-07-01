@@ -1,4 +1,5 @@
 import logging
+import os
 
 import redis
 import requests
@@ -9,7 +10,9 @@ from requests import RequestException
 
 _SERVICE_URL = "https://vast-eyrie-4711.herokuapp.com/?key={}"
 
-pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
+pool = redis.ConnectionPool(host=os.environ.get("REDIS_HOST"),
+                            port=os.environ.get("REDIS_PORT"),
+                            db=os.environ.get("REDIS_DB"))
 
 SECONDS_IN_DAY = 60 * 60 * 24
 connect_timeout, read_timeout = 5.0, 10.0

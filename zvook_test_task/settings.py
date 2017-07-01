@@ -58,7 +58,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'zvook_test_task.wsgi.application'
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
@@ -76,10 +75,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
-
-REDIS_IN_PROGRESS_SET_NAME = "in_progress"
-
-CELERY_BROKER_URL = "redis://localhost:6379/0"
 
 LOGGING = {
     'disable_existing_loggers': False,
@@ -119,3 +114,7 @@ LOGGING = {
         'level': 'INFO',
     }
 }
+
+REDIS_IN_PROGRESS_SET_NAME = "in_progress"
+
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL")
