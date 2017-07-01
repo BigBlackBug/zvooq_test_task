@@ -6,7 +6,7 @@ import os
 
 import redis
 from django.conf import settings
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from django.views import View
 
 from service.tasks import service_request_task
@@ -53,5 +53,10 @@ class MainView(View):
                             "Starting.".format(key))
                 redis_client.sadd(in_progress_set, key)
                 service_request_task.delay(key)
-            # accepted
-            return HttpResponse(status=202)
+
+                response_status = "started"
+            else:
+                response_status = "in progress"
+            return JsonResponse(status=202, data={
+                "status": response_status
+            })
