@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 import logging
 
 import redis
+from django.conf import settings
 from django.http import JsonResponse, HttpResponse
 from django.views import View
 
@@ -17,21 +18,28 @@ class MainView(View):
 
     def get(self, request):
         key = request.GET.get("key")
+        if key is None:
+            return JsonResponse(status=400, data={
+                "error": "Key argument is missing"
+            })
         logger.info("Got request for key {}".format(key))
-        # TODO input validation
+
         redis_client = redis.Redis(connection_pool=self.pool)
+
         logger.info("Checking if key {} is in cache".format(key))
-        hash = redis_client.get(key)
-        if hash:
-            logger.info("Key {} is in cache. Value: {}".format(key, hash))
+        value = redis_client.get(key)
+        if value:
+            logger.info("Key {} is in cache. Value: {}".format(key, value))
             return JsonResponse({
-                "hash": hash
+                "hash": value
             })
         else:
+            set_name = settings.REDIS_IN_PROGRESS_SET_NAME
             logger.info("Key {} not found in cache")
-            if not redis_client.sismember("in_progress", key):
+            if not redis_client.sismember(set_name, key):
                 logger.info("Task for key {} is not running. "
-                             "Starting".format(key))
-                redis_client.sadd("in_progress", key)
+                            "Starting.".format(key))
+                redis_client.sadd(set_name, key)
                 service_request_task.delay(key)
+            # no content
             return HttpResponse(status=204)

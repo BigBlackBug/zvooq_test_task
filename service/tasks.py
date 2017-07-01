@@ -4,6 +4,7 @@ import redis
 import requests
 from celery import shared_task
 from celery.exceptions import MaxRetriesExceededError
+from django.conf import settings
 from requests import RequestException
 
 _SERVICE_URL = "https://vast-eyrie-4711.herokuapp.com/?key={}"
@@ -21,7 +22,7 @@ def service_request_task(self, key):
         try:
             task.retry()
         except MaxRetriesExceededError:
-            redis_client.srem("in_progress", key)
+            redis_client.srem(settings.REDIS_IN_PROGRESS_SET_NAME, key)
             logger.exception(e)
 
     logger.info("Started task for key {}".format(key))
